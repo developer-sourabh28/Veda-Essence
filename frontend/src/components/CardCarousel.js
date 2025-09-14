@@ -20,14 +20,13 @@ export default function CardCarousel({ experience }) {
 
   const fetchCards = async () => {
     try {
-      const response = await api.get('/car'`,
-        { withCredentials: true }
-      )
-      setCard(response.data)
+      const response = await api.get('/card', { withCredentials: true });
+      setCard(response.data);
     } catch (error) {
-      alert('Failed to fetch cards')
+      alert('Failed to fetch cards');
     }
-  }
+  };
+  
 
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
@@ -49,15 +48,15 @@ export default function CardCarousel({ experience }) {
           {/* Card Content */}
           {cards.length > 0 && (
             <div className="flex-1 mx-4 text-center">
-              {cards[currentCard].image && (
-                <div className="mb-4">
-                  <img
-  src={`${process.env.REACT_APP_API_URL}/${cards[currentCard].image}`}
-  alt={cards[currentCard].name}
-  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto object-cover"
-/>
-                </div>
-              )}
+{cards[currentCard].image && (
+  <div className="mb-4">
+    <img
+      src={`${process.env.REACT_APP_API_URL}/${cards[currentCard].image}`}
+      alt={cards[currentCard].name}
+      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto object-cover"
+    />
+  </div>
+)}
 
               <div className="space-y-2">
                 <h3 className="text-white text-lg sm:text-xl font-semibold">

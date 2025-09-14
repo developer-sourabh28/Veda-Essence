@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import api from 'api';
+// import api from 'api';
 import Navbar from './Navbar';
 import { jwtDecode } from 'jwt-decode';
 // import { useNavigate } from 'react-router-dom';
 import { FaStar } from "react-icons/fa";
 import { QRCodeSVG } from 'qrcode.react';
 import { Package, X, Star, BarChart3, Trash2, FileText, Info, Ruler, Tag, DollarSign, Grid, ShoppingCart, MessageCircle, Edit3, Send, User, Calendar } from 'lucide-react';
-import api from '../api/apiConfig';
+import apiConfig from '../api/axiosConfig';
 
 export default function HomePage({ productId }) {
     const [items, setItems] = useState([]);
@@ -147,7 +147,7 @@ export default function HomePage({ productId }) {
             formData.append('folder', 'eCommerce');
 
             console.log('Uploading to Cloudinary...');
-            const cloudinaryResponse = await api.post(
+            const cloudinaryResponse = await apiConfig.post(
                 `https://api.cloudinary.com/v1_1/dkqzeypto/image/upload`,
                 formData
             );
@@ -173,7 +173,7 @@ export default function HomePage({ productId }) {
 
             console.log('Sending data to backend:', productData);
             
-            const response = await api.post(
+            const response = await apiConfig.post(
                 '/uploads',
                 productData,
                 {
@@ -246,7 +246,7 @@ export default function HomePage({ productId }) {
 
     const GetPost = async () => {
         try {
-            const response = await api.get('/post', {
+            const response = await apiConfig.get('/post', {
                 withCredentials: true,
             });
             setItems(response.data);
@@ -281,7 +281,7 @@ export default function HomePage({ productId }) {
         if (!productId) return;
 
         try {
-            const response = await api.get(
+            const response = await apiConfig.get(
                 `/rating/${productId}`,
                 {
                     headers: {
@@ -313,7 +313,7 @@ export default function HomePage({ productId }) {
                 return;
             }
 
-            const response = await api.post(
+            const response = await apiConfig.post(
                 `/rate/${productId}`,
                 { rating: newRating },
                 {
@@ -345,7 +345,7 @@ export default function HomePage({ productId }) {
         if (!productId) return;
 
         try {
-            const response = await api.get(`/comment/${productId}`);
+            const response = await apiConfig.get(`/comment/${productId}`);
             if (response.data && response.data.comments) {
                 setComments(response.data.comments);
             }
@@ -363,7 +363,7 @@ export default function HomePage({ productId }) {
                 return;
             }
 
-            const response = await api.delete(
+            const response = await apiConfig.delete(
                 `/comment/${reviewId}`,
                 {
                     headers: { 
@@ -417,7 +417,7 @@ export default function HomePage({ productId }) {
             const userId = decoded.id;
             const username = decoded.username;
 
-            const response = await api.post(
+            const response = await apiConfig.post(
                 `/comment/${productId}`,
                 {
                     userId: userId,
@@ -465,7 +465,7 @@ export default function HomePage({ productId }) {
         if (!token) return;
 
         try {
-            await api.get('/permission/admin', {
+            await apiConfig.get('/permission/admin', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -487,7 +487,7 @@ export default function HomePage({ productId }) {
 
         const userId = jwtDecode(token).id;
         try {
-            const response = await api.post(
+            const response = await apiConfig.post(
                 '/api/cart/add',
                 {
                     userId,
@@ -523,7 +523,7 @@ export default function HomePage({ productId }) {
         console.log('User ID', userId);
 
         try {
-            const response = await api.get(`/api/cart/${userId}`, {
+            const response = await apiConfig.get(`/api/cart/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -539,7 +539,7 @@ export default function HomePage({ productId }) {
 
     const handleDeletePost = async (id) => {
         try {
-            await api.delete(`/post/delete/${id}`, {
+            await apiConfig.delete(`/post/delete/${id}`, {
                 withCredentials: true,
             });
             alert('Post delete success')
@@ -561,7 +561,7 @@ export default function HomePage({ productId }) {
 
     const handleDeleteCart = async (id) => {
         try {
-            await api.delete(`/api/cart/${id}`,
+            await apiConfig.delete(`/api/cart/${id}`,
                 { withCredentials: true }
             )
             setCartItems(prevItems => prevItems.filter(item => item._id !== id))
@@ -594,7 +594,7 @@ export default function HomePage({ productId }) {
 
         const userId = jwtDecode(token).id;
         try {
-            const response = await api.post(
+            const response = await apiConfig.post(
                 '/api/address/add',
                 {
                     userId,

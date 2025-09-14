@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import api from '../api/axiosConfig'; // import your Axios instance
+import api from './api/axiosConfig'; // import your Axios instance
 
 function PayPalButton() {
   const paypalRef = useRef();
