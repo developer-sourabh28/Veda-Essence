@@ -3,143 +3,116 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const session = require('express-session');
 const nodemailer = require('nodemailer');
+const cors = require('cors');
+const path = require('path');
+const paypal = require('@paypal/checkout-server-sdk');
+
+// Import routes
 const User = require('./routes/UserRoute');
 const Post = require('./routes/PostRoute');
 const Permission = require('./routes/permissionRoute');
-const cors = require('cors');
-const path = require('path');
 const cart = require('./routes/cartRoute');
-const logout = require('./routes/logoutRoute')
+const logout = require('./routes/logoutRoute');
 const Card = require('./routes/cardRoute');
 const Rating = require('./routes/ratingRoute');
 const Review = require('./routes/reviewRoute');
-const paypal = require('@paypal/checkout-server-sdk');
 const addressRoute = require('./routes/addressRoute');
 const orderRoute = require('./routes/orderRoute');
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-// Enable CORS first
+// ✅ CORS setup (local + production)
+const allowedOrigins = [
+  'http://localhost:3000',
+  process.env.CLIENT_URL // e.g. https://yourapp.onrender.com
+];
+
 app.use(cors({
-    origin: 'http://localhost:3000',
-    methods: ['POST', 'GET', 'PUT', 'DELETE'],
-    credentials: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['POST', 'GET', 'PUT', 'DELETE'],
+  credentials: true,
 }));
 
 app.use(express.json());
 
-// Session configuration
+// ✅ Session
 app.use(session({
-    secret: process.env.SECRET_KEY,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: false,
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24,
-        sameSite: 'lax'
-    }
+  secret: process.env.SECRET_KEY || 'default_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24,
+    sameSite: 'lax'
+  }
 }));
 
+// ✅ PayPal
 const environment = new paypal.core.SandboxEnvironment(
-    process.env.PAYPAL_CLIENT_ID,
-    process.env.PAYPAL_SECRET
-  );
-  const client = new paypal.core.PayPalHttpClient(environment);
+  process.env.PAYPAL_CLIENT_ID,
+  process.env.PAYPAL_SECRET
+);
+const client = new paypal.core.PayPalHttpClient(environment);
 
-  app.post('/create-order', async (req, res) => {
-    const request = new paypal.orders.OrdersCreateRequest();
-    request.prefer('return=representation');
-    request.requestBody({
-      intent: 'CAPTURE',
-      purchase_units: [{
-        amount: {
-          currency_code: 'USD',
-          value: '10.00'
-        }
-      }]
-    });
-  
-    try {
-      const order = await client.execute(request);
-      res.json({ id: order.result.id });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
+app.post('/create-order', async (req, res) => {
+  const request = new paypal.orders.OrdersCreateRequest();
+  request.prefer('return=representation');
+  request.requestBody({
+    intent: 'CAPTURE',
+    purchase_units: [{ amount: { currency_code: 'USD', value: '10.00' } }]
   });
-  
 
-// Create reusable transporter
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'bansotiyas@gmail.com',
-        pass: 'pqlw fykm iads lxfy'
-    }
-});
-
-// Reusable email function
-const sendEmail = async (to, subject, body) => {
-    try {
-        console.log('Attempting to send email to:', to);
-        const mailOptions = {
-            from: 'bansotiyas@gmail.com',
-            to: to,
-            subject: subject,
-            html: body
-        };
-        
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully:', info.response);
-        return true;
-    } catch (error) {
-        console.error('Error sending email:', error);
-        return false;
-    }
-};
-
-// Make sendEmail available globally
-global.sendEmail = sendEmail;
-
-app.post('/api/send-email', async (req, res) => {
-  const { to, subject, body, isHtml } = req.body;
-  
   try {
-    // Configure your email service (Gmail, SendGrid, etc.)
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'bansotiyas@gmail.com',
-        pass: 'pqlw fykm iads lxfy' // Consider using environment variables for security
-      }
-    });
-
-    await transporter.sendMail({
-      from: 'bansotiyas@gmail.com',
-      to: to,
-      subject: subject,
-      html: body // Use html instead of text to properly render HTML content
-    });
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Error sending email:', error);
-    res.json({ success: false, message: error.message });
+    const order = await client.execute(request);
+    res.json({ id: order.result.id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// Serve the 'uploads' folder statically
+// ✅ Nodemailer (env vars instead of hardcoding!)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+global.sendEmail = async (to, subject, body) => {
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      html: body
+    });
+    console.log('Email sent:', info.response);
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
+};
+
+// ✅ Static folder for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// ✅ MongoDB
 mongoose.connect(MONGO_URI)
-    .then(() => {
-        console.log('MongoDB connected');
-    })
-    .catch((err) => console.log(err));
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
-// Mount routes
+// ✅ Routes
 app.use('/', User);
 app.use('/', Post);
 app.use('/permission', Permission);
@@ -151,6 +124,15 @@ app.use('/', Review);
 app.use('/api', addressRoute);
 app.use('/api', orderRoute);
 
+// ✅ Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
+  });
+}
+
+// ✅ Start server
 app.listen(PORT, () => {
-    console.log(`server is running at port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

@@ -1,9 +1,15 @@
 const multer = require('multer');
+const path = require('path');
 
-// Memory storage (no saving on local disk)
-const storage = multer.memoryStorage();
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // Make sure this folder exists
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
 
-// File type filter
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|png|jpg|gif/;
     const mimeType = allowedTypes.test(file.mimetype);

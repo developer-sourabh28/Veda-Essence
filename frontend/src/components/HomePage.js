@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 // import { useNavigate } from 'react-router-dom';
 import { FaStar } from "react-icons/fa";
 import { QRCodeSVG } from 'qrcode.react';
+import { Package, X, Star, BarChart3, Trash2, FileText, Info, Ruler, Tag, DollarSign, Grid, ShoppingCart, MessageCircle, Edit3, Send, User, Calendar } from 'lucide-react';
 
 export default function HomePage({ productId }) {
     const [items, setItems] = useState([]);
@@ -45,12 +46,17 @@ export default function HomePage({ productId }) {
         postalCode: '',
         phoneNumber: ''
     });
+    const [darkMode, setDarkMode] = useState(() => {
+        // Check localStorage for persisted mode
+        const stored = localStorage.getItem('veda_dark_mode');
+        return stored ? JSON.parse(stored) : false;
+    });
 
     const images = [
         'https://i.pinimg.com/736x/be/06/8b/be068b572e0be145fa97fe58d5580d3a.jpg',
         'https://i.pinimg.com/736x/0e/d1/13/0ed11392a8bc272f9a6d4f108a8f63b4.jpg',
-        'https://i.pinimg.com/736x/23/21/c9/2321c925e022d3efbae27645424c76c6.jpg',
-        'https://i.pinimg.com/736x/85/e8/52/85e852988f11565f4aed2d03c91bb570.jpg'
+        'https://i.pinimg.com/736x/aa/ea/6c/aaea6c0a8f31bc8f029c154533891539.jpg',
+        'https://i.pinimg.com/736x/a2/82/24/a28224c051048fe259b540e2a5ae722c.jpg'
     ];
 
     // const reviewPerProduct = 5;
@@ -227,6 +233,15 @@ export default function HomePage({ productId }) {
         }, 5000); 
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        localStorage.setItem('veda_dark_mode', JSON.stringify(darkMode));
+    }, [darkMode]);
 
     const GetPost = async () => {
         try {
@@ -624,7 +639,37 @@ export default function HomePage({ productId }) {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen">
+
+            {/* Dark Mode Toggle Button */}
+            <div className="relative flex justify-end items-center p-4">
+                <div className="absolute left-1/2 transform -translate-x-1/2">
+                    <span className="text-lg font-semibold italic dark:text-gray-200 ">~ Veda Essence ~</span>
+                </div>
+                {/* Modern Switch for Dark/Light Mode */}
+                <label className="flex items-center cursor-pointer select-none">
+                    <span className="sr-only">Toggle dark mode</span>
+                    <input
+                        type="checkbox"
+                        checked={darkMode}
+                        onChange={() => setDarkMode((prev) => !prev)}
+                        className="hidden"
+                    />
+                    <span
+                        className={`w-12 h-6 flex items-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 transition-colors duration-300 ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`}
+                    >
+                        <span
+                            className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 flex items-center justify-center text-lg ${darkMode ? 'translate-x-6' : 'translate-x-0'}`}
+                        >
+                            {darkMode ? '🌙' : '☀️'}
+                        </span>
+                    </span>
+                    <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {darkMode ? 'Dark' : 'Light'}
+                    </span>
+                </label>
+            </div>
+
             {/* Navbar */}
             <Navbar
                 OnCartClick={handleCartButtonClick}
@@ -640,14 +685,14 @@ export default function HomePage({ productId }) {
             />
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 bg-white dark:bg-black transition-colors duration-300">
                 {/* Image Carousel */}
                 <div className="mb-6 sm:mb-8 lg:mb-12">
                     <div className="relative h-[200px] sm:h-[300px] lg:h-[400px] rounded-xl sm:rounded-2xl overflow-hidden">
                         {images.map((image, index) => (
                             <img
                                 key={index}
-                                className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${
+                                className={`absolute top-0 left-0 w-full h-[120%] object-cover transition-opacity duration-500 ${
                                     currentImageIndex === index ? 'opacity-100' : 'opacity-0'
                                 }`}
                                 src={image}
@@ -668,13 +713,13 @@ export default function HomePage({ productId }) {
                         </button>
 
                         {isOpen && (
-                            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
                                 <form onSubmit={handleFileSubmit} className="space-y-4">
                                     <div>
                                         <input 
                                             type="file" 
                                             onChange={handleFileChange}
-                                            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         />
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -683,20 +728,20 @@ export default function HomePage({ productId }) {
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                             placeholder="Enter Name"
-                                            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         />
                                         <input
                                             type="text"
                                             value={description}
                                             onChange={(e) => setDescription(e.target.value)}
                                             placeholder="Enter Description"
-                                            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         />
                                         <select 
                                             value={size}
                                             onChange={(e) => setSize(e.target.value)}
                                             defaultValue=""
-                                            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         >
                                             <option value="" disabled>Select Size</option>
                                             <option value="small">Small</option>
@@ -707,7 +752,7 @@ export default function HomePage({ productId }) {
                                             value={productType}
                                             onChange={(e) => setProductType(e.target.value)}
                                             defaultValue=""
-                                            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         >
                                             <option value="" disabled>Select Type</option>
                                             <option value="male">Male</option>
@@ -718,7 +763,7 @@ export default function HomePage({ productId }) {
                                             value={group}
                                             onChange={(e) => setGroup(e.target.value)}
                                             defaultValue=""
-                                            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         >
                                             <option value="" disabled>Select Category</option>
                                             <option value="bestseller">Best Seller</option>
@@ -729,7 +774,7 @@ export default function HomePage({ productId }) {
                                             value={price}
                                             onChange={(e) => setPrice(e.target.value)}
                                             placeholder="Enter Price"
-                                            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         />
                                     </div>
                                     <button 
@@ -748,7 +793,7 @@ export default function HomePage({ productId }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                     {Array.isArray(displayedItems) && displayedItems.length > 0 ? (
                         displayedItems.map(item => (
-                            <div key={item._id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+                            <div key={item._id} className="bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                                 {!activePost && item.image && (
                                     <div>
                                         <img
@@ -758,15 +803,15 @@ export default function HomePage({ productId }) {
                                             onClick={() => handleImageClick(item)}
                                         />
                                         <div className="p-4">
-                                            <h3 className="font-bold text-lg sm:text-xl mb-2">{item.name}</h3>
-                                            <p className="text-gray-600">${item.price}</p>
+                                            <h3 className="font-bold text-lg sm:text-xl mb-2 text-black dark:text-white">{item.name}</h3>
+                                            <p className="text-gray-600 dark:text-gray-300">${item.price}</p>
                                         </div>
                                     </div>
                                 )}
                             </div>
                         ))
                     ) : (
-                        <p className="text-center text-gray-500 col-span-full">No items found</p>
+                        <p className="text-center text-gray-500 dark:text-gray-300 col-span-full">No items found</p>
                     )}
                 </div>
             </div>
@@ -774,11 +819,11 @@ export default function HomePage({ productId }) {
             {/* Modals */}
             {/* Cart Modal */}
             {isCartOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/80 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
                         <div className="p-4 sm:p-6">
                             <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-xl font-bold">Your Cart</h2>
+                                <h2 className="text-xl font-bold text-black dark:text-white">Your Cart</h2>
                                 <button
                                     className="text-red-500 hover:text-red-600"
                                     onClick={handleCloseCart}
@@ -786,7 +831,7 @@ export default function HomePage({ productId }) {
                                     <i className="text-2xl sm:text-3xl fa-regular fa-circle-xmark"></i>
                                 </button>
                             </div>
-                            <div className="border border-gray-200 rounded-lg p-4">
+                            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                                 {cartItems.length > 0 ? (
                                     cartItems.map((item, index) => (
                                         <div key={index} className="mb-6 last:mb-0">
@@ -800,11 +845,11 @@ export default function HomePage({ productId }) {
                                                 </div>
                                                 
                                                 <div className="flex-grow">
-                                                    <h3 className="font-semibold text-lg mb-2">{item.itemName}</h3>
+                                                    <h3 className="font-semibold text-lg mb-2 text-black dark:text-white">{item.itemName}</h3>
                                                     <div className="grid grid-cols-2 gap-2 text-sm">
-                                                        <p><span className="text-gray-600">Price:</span> ${item.itemPrice}</p>
-                                                        <p><span className="text-gray-600">Size:</span> {item.itemSize}</p>
-                                                        <p><span className="text-gray-600">Type:</span> {item.itemType}</p>
+                                                        <p><span className="text-gray-600 dark:text-gray-300">Price:</span> <span className="text-black dark:text-white">${item.itemPrice}</span></p>
+                                                        <p><span className="text-gray-600 dark:text-gray-300">Size:</span> <span className="text-black dark:text-white">{item.itemSize}</span></p>
+                                                        <p><span className="text-gray-600 dark:text-gray-300">Type:</span> <span className="text-black dark:text-white">{item.itemType}</span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -820,21 +865,21 @@ export default function HomePage({ productId }) {
                                             </div>
                                             
                                             {index < cartItems.length - 1 && (
-                                                <hr className="my-4 border-gray-200" />
+                                                <hr className="my-4 border-gray-200 dark:border-gray-700" />
                                             )}
                                         </div>
                                     ))
                                 ) : (
                                     <div className="text-center py-8">
                                         <i className="fas fa-shopping-cart text-4xl text-gray-400 mb-4"></i>
-                                        <p className="text-gray-500">Your Cart is Empty</p>
+                                        <p className="text-gray-500 dark:text-gray-300">Your Cart is Empty</p>
                                     </div>
                                 )}
                             </div>
                             {cartItems.length > 0 && (
                                 <div className="mt-6">
-                                    <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                                        <div className="flex justify-between items-center text-lg font-semibold">
+                                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-4">
+                                        <div className="flex justify-between items-center text-lg font-semibold text-black dark:text-white">
                                             <span>Total Amount:</span>
                                             <span>${cartItems.reduce((total, item) => total + Number(item.itemPrice), 0).toFixed(2)}</span>
                                         </div>
@@ -852,13 +897,12 @@ export default function HomePage({ productId }) {
                     </div>
                 </div>
             )}
-
             {/* Address Form Modal */}
             {showAddressForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+                <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/80 flex items-center justify-center p-4 z-[60]">
+                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-gray-200 dark:border-gray-700">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold">Delivery Address</h2>
+                            <h2 className="text-xl font-bold text-black dark:text-white">Delivery Address</h2>
                             <button
                                 className="text-red-500 hover:text-red-600"
                                 onClick={() => setShowAddressForm(false)}
@@ -868,77 +912,77 @@ export default function HomePage({ productId }) {
                         </div>
                         <form onSubmit={handleAddressSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
                                 <input
                                     type="text"
                                     name="fullName"
                                     value={address.fullName}
                                     onChange={handleAddressChange}
                                     required
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                     placeholder="Enter your full name"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Street Address</label>
                                 <input
                                     type="text"
                                     name="streetAddress"
                                     value={address.streetAddress}
                                     onChange={handleAddressChange}
                                     required
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                     placeholder="Enter street address"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
                                     <input
                                         type="text"
                                         name="city"
                                         value={address.city}
                                         onChange={handleAddressChange}
                                         required
-                                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         placeholder="Enter city"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
                                     <input
                                         type="text"
                                         name="state"
                                         value={address.state}
                                         onChange={handleAddressChange}
                                         required
-                                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         placeholder="Enter state"
                                     />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Postal Code</label>
                                     <input
                                         type="text"
                                         name="postalCode"
                                         value={address.postalCode}
                                         onChange={handleAddressChange}
                                         required
-                                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         placeholder="Enter postal code"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
                                     <input
                                         type="tel"
                                         name="phoneNumber"
                                         value={address.phoneNumber}
                                         onChange={handleAddressChange}
                                         required
-                                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                                         placeholder="Enter phone number"
                                     />
                                 </div>
@@ -958,10 +1002,10 @@ export default function HomePage({ productId }) {
 
             {/* Payment QR Modal */}
             {showPaymentQR && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+                <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/80 flex items-center justify-center p-4 z-[60]">
+                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-gray-200 dark:border-gray-700">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold">Scan to Pay</h2>
+                            <h2 className="text-xl font-bold text-black dark:text-white">Scan to Pay</h2>
                             <button
                                 className="text-red-500 hover:text-red-600"
                                 onClick={() => setShowPaymentQR(false)}
@@ -970,7 +1014,7 @@ export default function HomePage({ productId }) {
                             </button>
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="bg-white p-4 rounded-lg shadow-md mb-4">
+                            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-4">
                                 <QRCodeSVG
                                     value={generateGPayURL(paymentAmount)}
                                     size={256}
@@ -978,8 +1022,8 @@ export default function HomePage({ productId }) {
                                     includeMargin={true}
                                 />
                             </div>
-                            <p className="text-lg font-semibold mb-2">Amount: ${paymentAmount.toFixed(2)}</p>
-                            <div className="text-sm text-gray-600 text-center space-y-2">
+                            <p className="text-lg font-semibold mb-2 text-black dark:text-white">Amount: ${paymentAmount.toFixed(2)}</p>
+                            <div className="text-sm text-gray-600 dark:text-gray-300 text-center space-y-2">
                                 <p>Scan this QR code with your GPay app to make the payment</p>
                                 <p className="font-medium">Delivery Address:</p>
                                 <p>{address.fullName}</p>
@@ -994,10 +1038,10 @@ export default function HomePage({ productId }) {
 
             {/* Payment Options Modal */}
             {showPaymentOptions && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+                <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black/80 flex items-center justify-center p-4 z-[60]">
+                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-gray-200 dark:border-gray-700">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold">Select Payment Method</h2>
+                            <h2 className="text-xl font-bold text-black dark:text-white">Select Payment Method</h2>
                             <button
                                 className="text-red-500 hover:text-red-600"
                                 onClick={() => setShowPaymentOptions(false)}
@@ -1008,14 +1052,14 @@ export default function HomePage({ productId }) {
                         <div className="space-y-4">
                             <button
                                 onClick={() => handlePaymentMethod('gpay')}
-                                className="w-full bg-white border-2 border-blue-500 text-blue-500 py-3 px-6 rounded-lg hover:bg-blue-50 transition duration-200 text-base font-semibold flex items-center justify-center gap-2"
+                                className="w-full bg-white dark:bg-gray-800 border-2 border-blue-500 text-blue-500 py-3 px-6 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900 transition duration-200 text-base font-semibold flex items-center justify-center gap-2"
                             >
                                 <i className="fab fa-google-pay"></i>
                                 Pay with GPay
                             </button>
                             <button
                                 onClick={() => handlePaymentMethod('cod')}
-                                className="w-full bg-white border-2 border-green-500 text-green-500 py-3 px-6 rounded-lg hover:bg-green-50 transition duration-200 text-base font-semibold flex items-center justify-center gap-2"
+                                className="w-full bg-white dark:bg-gray-800 border-2 border-green-500 text-green-500 py-3 px-6 rounded-lg hover:bg-green-50 dark:hover:bg-green-900 transition duration-200 text-base font-semibold flex items-center justify-center gap-2"
                             >
                                 <i className="fas fa-money-bill-wave"></i>
                                 Cash on Delivery
@@ -1027,46 +1071,71 @@ export default function HomePage({ productId }) {
 
             {/* Product Detail Modal */}
             {activePost && activePost._id && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
-                        <div className="p-4 sm:p-6 lg:p-8">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden relative border border-white/20 dark:border-gray-700/50">
+            {/* Header with Glass Effect */}
+            <div className="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-white/20 dark:border-gray-700/50 p-4 flex justify-between items-center z-10">
+                <div className="flex items-center gap-3">
+                    <Package className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    <h2 className="text-xl lg:text-2xl font-bold text-black dark:text-white truncate pr-4">
+                        {activePost.name}
+                    </h2>
+                </div>
                             <button 
-                                className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    className="flex items-center gap-2 bg-red-500/90 hover:bg-red-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg transition duration-200 font-medium"
                                 onClick={handleClosePost}
                             >
-                                Close
+                    <X className="w-4 h-4" />
+                    
                             </button>
+            </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mt-8">
-                                <div>
+            {/* Content */}
+            <div className="overflow-y-auto max-h-[calc(95vh-80px)]">
+                <div className="p-4 sm:p-6 lg:p-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                        {/* Left Column - Image and Rating */}
+                        <div className="space-y-6">
+                            <div className="relative">
                                     <img
                                         src={activePost.image}
                                         alt={activePost.name}
-                                        className="w-full h-[250px] sm:h-[350px] lg:h-[500px] object-cover rounded-2xl"
-                                    />
-                                    <div className="mt-6">
-                                        <h3 className="text-xl font-semibold mb-2">Rate this Product</h3>
+                                    className="w-full h-[280px] sm:h-[350px] lg:h-[450px] object-cover rounded-xl shadow-lg"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                            </div>
+                            
+                            {/* Rating Section with Glass Effect */}
+                            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg p-4 rounded-xl border border-white/20 dark:border-gray-700/50">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Star className="w-5 h-5 text-yellow-500" />
+                                    <h3 className="text-lg font-semibold text-black dark:text-white">Rate Product</h3>
+                                </div>
                                         <div className="flex items-center gap-2 flex-wrap">
                                             {[1, 2, 3, 4, 5].map((star) => (
                                                 <FaStar
                                                     key={star}
-                                                    className={`cursor-pointer text-2xl ${
-                                                        star <= (rating || 0) ? 'text-yellow-400' : 'text-gray-300'
+                                            className={`cursor-pointer text-2xl transition-colors duration-200 ${
+                                                star <= (rating || 0) ? 'text-yellow-400 hover:text-yellow-500' : 'text-gray-300 dark:text-gray-600 hover:text-gray-400'
                                                     }`}
                                                     onClick={() => submitRating(star, activePost._id)}
                                                 />
                                             ))}
-                                            <span className="ml-2 text-sm sm:text-base">
-                                                ({typeof avgRating === 'number' ? avgRating.toFixed(1) : '0.0'} avg from {totalRating} ratings)
-                                            </span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <BarChart3 className="w-4 h-4 text-gray-500" />
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {typeof avgRating === 'number' ? avgRating.toFixed(1) : '0.0'} from {totalRating} ratings
+                                    </p>
                                         </div>
                                     </div>
                                 </div>
 
+                        {/* Right Column - Product Details */}
                                 <div className="space-y-6">
-                                    <div className="flex justify-between items-center">
-                                        <h2 className="text-2xl lg:text-3xl font-bold">{activePost.name}</h2>
+                            {/* Admin Delete Button */}
                                         {isAdmin && (
+                                <div className="flex justify-end">
                                             <button
                                                 onClick={() => {
                                                     if (window.confirm('Are you sure you want to delete this product?')) {
@@ -1074,67 +1143,138 @@ export default function HomePage({ productId }) {
                                                         handleClosePost();
                                                     }
                                                 }}
-                                                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
+                                        className="flex items-center gap-2 bg-red-500/90 hover:bg-red-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg transition duration-200 font-medium"
                                             >
-                                                Delete Product
+                                        <Trash2 className="w-4 h-4" />
+                                        Delete
                                             </button>
-                                        )}
+                                </div>
+                            )}
+
+                            {/* Description */}
+                            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg p-4 rounded-xl border border-white/20 dark:border-gray-700/50">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                    <h3 className="text-lg font-semibold text-black dark:text-white">Description</h3>
                                     </div>
-                                    <p className="text-gray-600 text-base lg:text-lg">{activePost.description}</p>
-                                    
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <p className="text-base lg:text-lg"><span className="font-semibold">Size:</span> {activePost.size}</p>
-                                        <p className="text-base lg:text-lg"><span className="font-semibold">Type:</span> {activePost.type}</p>
-                                        <p className="text-base lg:text-lg"><span className="font-semibold">Price:</span> ${activePost.price}</p>
-                                        <p className="text-base lg:text-lg"><span className="font-semibold">Category:</span> {activePost.group}</p>
+                                <p className="text-gray-700 dark:text-gray-300 text-base lg:text-lg leading-relaxed">
+                                    {activePost.description}
+                                </p>
+                            </div>
+                            
+                            {/* Product Details Grid */}
+                            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg p-4 rounded-xl border border-white/20 dark:border-gray-700/50">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Info className="w-5 h-5 text-green-600 dark:text-green-400" />
+                                    <h3 className="text-lg font-semibold text-black dark:text-white">Product Details</h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="flex items-center justify-between py-2 border-b border-white/20 dark:border-gray-700/50">
+                                        <div className="flex items-center gap-2">
+                                            <Ruler className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                            <span className="font-medium text-gray-600 dark:text-gray-400">Size:</span>
+                                        </div>
+                                        <span className="text-black dark:text-white">{activePost.size}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between py-2 border-b border-white/20 dark:border-gray-700/50">
+                                        <div className="flex items-center gap-2">
+                                            <Tag className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                            <span className="font-medium text-gray-600 dark:text-gray-400">Type:</span>
+                                        </div>
+                                        <span className="text-black dark:text-white">{activePost.type}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between py-2 border-b border-white/20 dark:border-gray-700/50">
+                                        <div className="flex items-center gap-2">
+                                            <DollarSign className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                            <span className="font-medium text-gray-600 dark:text-gray-400">Price:</span>
+                                        </div>
+                                        <span className="text-black dark:text-white font-semibold">${activePost.price}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between py-2 border-b border-white/20 dark:border-gray-700/50">
+                                        <div className="flex items-center gap-2">
+                                            <Grid className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                            <span className="font-medium text-gray-600 dark:text-gray-400">Category:</span>
+                                        </div>
+                                        <span className="text-black dark:text-white">{activePost.group}</span>
+                                    </div>
+                                </div>
                                     </div>
 
+                            {/* Add to Cart Button */}
                                     <button 
-                                        className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-200 text-base lg:text-lg font-semibold"
+                                className="w-full bg-blue-600/90 hover:bg-blue-700/90 backdrop-blur-sm text-white py-3 px-6 rounded-xl transition duration-200 text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                                         onClick={() => handleAddToCart(activePost)}
                                     >
+                                <ShoppingCart className="w-5 h-5" />
                                         Add to Cart
                                     </button>
 
-                                    <div className="mt-8">
-                                        <h3 className="text-xl font-semibold mb-4">Reviews</h3>
+                            {/* Reviews Section */}
+                            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg p-4 rounded-xl border border-white/20 dark:border-gray-700/50">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <MessageCircle className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                                    <h3 className="text-lg font-semibold text-black dark:text-white">Customer Reviews</h3>
+                                </div>
+                                
+                                {/* Review Input */}
                                         <div className="flex gap-2 mb-4">
+                                    <div className="flex-1 relative">
                                             <input
                                                 type="text"
                                                 value={newComment}
                                                 onChange={(e) => setNewComment(e.target.value)}
                                                 placeholder="Write a review..."
-                                                className="flex-1 p-2 border border-gray-300 rounded"
+                                            className="w-full pl-10 pr-4 py-3 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border border-white/30 dark:border-gray-600/50 rounded-lg dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                             />
+                                        <Edit3 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    </div>
                                             <button
                                                 onClick={handleSubmit}
-                                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 whitespace-nowrap"
+                                        className="bg-blue-600/90 hover:bg-blue-700/90 backdrop-blur-sm text-white px-6 py-3 rounded-lg transition duration-200 font-medium whitespace-nowrap flex items-center gap-2"
                                             >
-                                                Post
+                                        <Send className="w-4 h-4" />
                                             </button>
                                         </div>
 
-                                        <div className="space-y-4 max-h-[200px] overflow-y-auto">
-                                            {comments.map((comment) => (
-                                                <div key={comment._id} className="bg-gray-50 p-4 rounded-lg">
-                                                    <div className="flex justify-between items-center mb-2 flex-wrap gap-2">
-                                                        <p className="font-semibold">{comment.username}</p>
+                                {/* Reviews List */}
+                                <div className="space-y-3 max-h-[250px] overflow-y-auto">
+                                    {comments.length > 0 ? (
+                                        comments.map((comment) => (
+                                            <div key={comment._id} className="bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm p-4 rounded-lg border border-white/30 dark:border-gray-600/50">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <User className="w-4 h-4 text-gray-500" />
+                                                        <p className="font-semibold text-black dark:text-white">{comment.username}</p>
+                                                    </div>
                                                         {isCurrentUserComment(comment) && (
                                                             <button
                                                                 onClick={() => deleteComments(comment._id)}
-                                                                className="text-red-500 hover:text-red-600"
+                                                            className="text-red-500 hover:text-red-600 text-sm font-medium transition duration-200 flex items-center gap-1"
                                                             >
+                                                            <Trash2 className="w-3 h-3" />
                                                                 Delete
                                                             </button>
                                                         )}
                                                     </div>
-                                                    <p className="text-gray-700">{comment.comment}</p>
-                                                    <p className="text-sm text-gray-500 mt-1">
+                                                <p className="text-gray-700 dark:text-gray-300 mb-2">{comment.comment}</p>
+                                                <div className="flex items-center gap-2">
+                                                    <Calendar className="w-3 h-3 text-gray-400" />
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
                                                         {new Date(comment.createdAt).toLocaleDateString()}
                                                     </p>
                                                 </div>
-                                            ))}
                                         </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                                            <p className="text-gray-500 dark:text-gray-400">
+                                                No reviews yet. Be the first to review this product!
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                                     </div>
                                 </div>
                             </div>

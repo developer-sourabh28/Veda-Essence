@@ -4,6 +4,8 @@ const Card = require('../schemas/CardSchema');
 const upload = require('../configure/images');
 
 router.post('/api/cards', upload.single('image'), async (req, res) => {
+    console.log("File received:", req.file);
+    console.log("Request body:", req.body);
     try {
         if(!req.file){
             return res.status(400).json({message : 'No image file uploaded'})
@@ -15,14 +17,15 @@ router.post('/api/cards', upload.single('image'), async (req, res) => {
             return res.status(400).json({message : 'All fields are required'})
         }
 
-        const image = req.file ? req.file.path : null;
+        const image = req.file ? req.file.path.replace(/\\/g, "/") : null; // Use relative path for image
 
         const newCard = new Card({
             name, description, profile, image
         })
         await newCard.save();
 
-        res.status(200).json({message : 'Post addess successfully', card : newCard});
+        res.status(200).json({ message: 'Post added successfully', post: newCard });
+
     } catch (error) {
         res.status(500).json({message : 'Something went wrong', error : error.message})
     }
