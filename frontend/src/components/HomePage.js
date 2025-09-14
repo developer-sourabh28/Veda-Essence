@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from 'api';
 import Navbar from './Navbar';
 import { jwtDecode } from 'jwt-decode';
 // import { useNavigate } from 'react-router-dom';
 import { FaStar } from "react-icons/fa";
 import { QRCodeSVG } from 'qrcode.react';
 import { Package, X, Star, BarChart3, Trash2, FileText, Info, Ruler, Tag, DollarSign, Grid, ShoppingCart, MessageCircle, Edit3, Send, User, Calendar } from 'lucide-react';
+import api from '../api/apiConfig';
 
 export default function HomePage({ productId }) {
     const [items, setItems] = useState([]);
@@ -146,7 +147,7 @@ export default function HomePage({ productId }) {
             formData.append('folder', 'eCommerce');
 
             console.log('Uploading to Cloudinary...');
-            const cloudinaryResponse = await axios.post(
+            const cloudinaryResponse = await api.post(
                 `https://api.cloudinary.com/v1_1/dkqzeypto/image/upload`,
                 formData
             );
@@ -172,8 +173,8 @@ export default function HomePage({ productId }) {
 
             console.log('Sending data to backend:', productData);
             
-            const response = await axios.post(
-                'http://localhost:8000/api/uploads',
+            const response = await api.post(
+                '/uploads',
                 productData,
                 {
                     headers: {
@@ -245,7 +246,7 @@ export default function HomePage({ productId }) {
 
     const GetPost = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/post', {
+            const response = await api.get('/post', {
                 withCredentials: true,
             });
             setItems(response.data);
@@ -280,8 +281,8 @@ export default function HomePage({ productId }) {
         if (!productId) return;
 
         try {
-            const response = await axios.get(
-                `http://localhost:8000/rating/${productId}`,
+            const response = await api.get(
+                `/rating/${productId}`,
                 {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('authToken')}`
@@ -312,8 +313,8 @@ export default function HomePage({ productId }) {
                 return;
             }
 
-            const response = await axios.post(
-                `http://localhost:8000/rate/${productId}`,
+            const response = await api.post(
+                `/rate/${productId}`,
                 { rating: newRating },
                 {
                     headers: {
@@ -344,7 +345,7 @@ export default function HomePage({ productId }) {
         if (!productId) return;
 
         try {
-            const response = await axios.get(`http://localhost:8000/comment/${productId}`);
+            const response = await api.get(`/comment/${productId}`);
             if (response.data && response.data.comments) {
                 setComments(response.data.comments);
             }
@@ -362,8 +363,8 @@ export default function HomePage({ productId }) {
                 return;
             }
 
-            const response = await axios.delete(
-                `http://localhost:8000/comment/${reviewId}`,
+            const response = await api.delete(
+                `/comment/${reviewId}`,
                 {
                     headers: { 
                         'Authorization': `Bearer ${token}` 
@@ -416,8 +417,8 @@ export default function HomePage({ productId }) {
             const userId = decoded.id;
             const username = decoded.username;
 
-            const response = await axios.post(
-                `http://localhost:8000/comment/${productId}`,
+            const response = await api.post(
+                `/comment/${productId}`,
                 {
                     userId: userId,
                     username: username,
@@ -464,7 +465,7 @@ export default function HomePage({ productId }) {
         if (!token) return;
 
         try {
-            await axios.get('http://localhost:8000/permission/admin', {
+            await api.get('/permission/admin', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -486,8 +487,8 @@ export default function HomePage({ productId }) {
 
         const userId = jwtDecode(token).id;
         try {
-            const response = await axios.post(
-                'http://localhost:8000/api/cart/add',
+            const response = await api.post(
+                '/api/cart/add',
                 {
                     userId,
                     itemId: item._id,
@@ -522,7 +523,7 @@ export default function HomePage({ productId }) {
         console.log('User ID', userId);
 
         try {
-            const response = await axios.get(`http://localhost:8000/api/cart/${userId}`, {
+            const response = await api.get(`/api/cart/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -538,7 +539,7 @@ export default function HomePage({ productId }) {
 
     const handleDeletePost = async (id) => {
         try {
-            await axios.delete(`http://localhost:8000/post/delete/${id}`, {
+            await api.delete(`/post/delete/${id}`, {
                 withCredentials: true,
             });
             alert('Post delete success')
@@ -560,7 +561,7 @@ export default function HomePage({ productId }) {
 
     const handleDeleteCart = async (id) => {
         try {
-            await axios.delete(`http://localhost:8000/api/cart/${id}`,
+            await api.delete(`/api/cart/${id}`,
                 { withCredentials: true }
             )
             setCartItems(prevItems => prevItems.filter(item => item._id !== id))
@@ -593,8 +594,8 @@ export default function HomePage({ productId }) {
 
         const userId = jwtDecode(token).id;
         try {
-            const response = await axios.post(
-                'http://localhost:8000/api/address/add',
+            const response = await api.post(
+                '/api/address/add',
                 {
                     userId,
                     ...address

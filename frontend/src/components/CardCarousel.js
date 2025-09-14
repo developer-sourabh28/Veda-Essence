@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
+import api from '../api/axiosConfig';
 
 export default function CardCarousel({ experience }) {
   const [currentCard, setCurrentCard] = useState(0);
@@ -19,7 +20,7 @@ export default function CardCarousel({ experience }) {
 
   const fetchCards = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/card`,
+      const response = await api.get('/car'`,
         { withCredentials: true }
       )
       setCard(response.data)
@@ -51,10 +52,10 @@ export default function CardCarousel({ experience }) {
               {cards[currentCard].image && (
                 <div className="mb-4">
                   <img
-                    src={`http://localhost:8000/${cards[currentCard].image}`}
-                    alt={cards[currentCard].name}
-                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto object-cover"
-                  />
+  src={`${process.env.REACT_APP_API_URL}/${cards[currentCard].image}`}
+  alt={cards[currentCard].name}
+  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto object-cover"
+/>
                 </div>
               )}
 

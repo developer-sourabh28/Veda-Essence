@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
+import api from "../api/axiosConfig";
 
 export default function Signup() {
 
@@ -13,7 +14,7 @@ export default function Signup() {
 
     const LoginUser = async() => {
         try {
-            const response = await axios.post('http://localhost:8000/login', 
+            const response = await api.post('/login', 
                 {email : email, password : password},
                 {withCredentials : true},
             )

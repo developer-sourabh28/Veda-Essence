@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from '../api/axiosConfig';
 
 export default function Navbar({ OnCartClick, OnCategoryClick, OnArrivalClick, selectedSort, showBestSeller, setShowBestSeller, showCrazyDeals, setShowCrazyDeals, showNewArrivals, setShowNewArrivals}) {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export default function Navbar({ OnCartClick, OnCategoryClick, OnArrivalClick, s
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:8000/api/logout", {}, { withCredentials: true });
+      await api.post("/logout", {}, { withCredentials: true });
       navigate("/");
     } catch (error) {
       console.log("Logout failed", error.response?.data || error.message);

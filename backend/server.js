@@ -26,8 +26,9 @@ const MONGO_URI = process.env.MONGO_URI;
 // ✅ CORS setup (local + production)
 const allowedOrigins = [
   'http://localhost:3000',
-  process.env.CLIENT_URL // e.g. https://yourapp.onrender.com
+  'https://veda-essence.onrender.com'
 ];
+
 
 app.use(cors({
   origin: function (origin, callback) {

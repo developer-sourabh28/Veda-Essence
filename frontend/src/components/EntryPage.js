@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import axios from 'axios';
 import CardCarousel from './CardCarousel';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axiosConfig';
 
 export default function EntryPage() {
   const [cards, setCards] = useState([]);
@@ -46,8 +47,8 @@ export default function EntryPage() {
     formData.append('profile', profile);
 
     try {
-      const response = await axios.post(
-        'http://localhost:8000/api/cards',
+      const response = await api.post(
+        '/cards',
         formData,
         // {
         //   headers: {
